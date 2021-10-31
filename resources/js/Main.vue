@@ -32,7 +32,7 @@ export default {
 .swal2-styled { padding: 10px !important;}
 .vdatetime-input { border: none; width: 100%; }
 .dropzone .dz-preview .dz-progress { opacity: 0 !important;}
-#search-field { padding: 10px; border: 1px solid #ddd; }
+#search-field { padding: 10px; border: 1px solid #ddd; font-size:15px; }
 </style>
 
 <style>

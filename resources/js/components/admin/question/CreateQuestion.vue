@@ -65,7 +65,7 @@
                   <label for="score" class="form-label">Score<span class="text-danger">*</span></label>
                 </div>
                 <div class="col-9">
-                  <input type="number" class="form-control" id="score" name="score" v-model="question.score" required>
+                  <input type="text" class="form-control" id="score" name="score" v-model="question.score" required>
                   <span class="invalid-feedback" v-if="Object.keys(errors).length" role="alert">
                       <strong>{{ errors.score }}</strong>
                   </span>

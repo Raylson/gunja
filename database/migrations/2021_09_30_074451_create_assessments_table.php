@@ -15,7 +15,7 @@ class CreateAssessmentsTable extends Migration
     {
         Schema::create('assessments', function (Blueprint $table) {
             $table->id();
-            $table->string('unique_key');
+            $table->unsignedBigInteger('examiner_id');
             $table->unsignedBigInteger('question_id');
             $table->unsignedBigInteger('answer_id');
             $table->string('answer');
@@ -24,6 +24,9 @@ class CreateAssessmentsTable extends Migration
             $table->text('review')->default('');
             $table->integer('admin_id');
             $table->timestamps();
+
+            $table->foreign('examiner_id')->references('id')->on('examiners')
+                ->onDelete('cascade')->onUpdate('cascade');
 
             $table->foreign('question_id')->references('id')->on('questions')
                 ->onDelete('cascade')->onUpdate('cascade');

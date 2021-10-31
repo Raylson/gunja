@@ -42,7 +42,7 @@ class AuthController extends Controller
         // return response([ 'user' => $user->only(['first_name', 'middle_name', 'last_name', 'email', 'phone', 'address']), 'access_token' => $accessToken], 200);
         if($user)
         {
-            \Session::flash('quick_msg', 'User registration succecss! Please login now.');
+            \Session::flash('quick_msg', 'User registration success! Please login now.');
             return response([ 'status' => 'success', 'msg' => 'User registered successfully.'], 200);
         }
         else
@@ -70,11 +70,11 @@ class AuthController extends Controller
 	public function logout (Request $request) {
         $token = $request->user()->token();
 	    $token->revoke();
-        
+        $userType = auth()->user()->user_type;
         session()->forget(['user_login', 'user_api_token', 'user_perms']);
         auth('web')->logout();
 
-	    $response = ['message' => 'You have been successfully logged out!', 'logout' => true]; // logout field is to be used in ForceJsonResponse middleware
+	    $response = ['message' => 'You have been successfully logged out!', 'logout' => true, 'user_type' => $userType]; // logout field is to be used in ForceJsonResponse middleware
 	    return response($response, 200);
 	}
 

@@ -29,15 +29,17 @@ const CreateQuestion = () => import('../components/admin/question/CreateQuestion
 // Examiners
 const Examiners = () => import('../components/admin/examiner/Examiners')
 const ExaminerDetail = () => import('../components/admin/examiner/ExaminerDetail')
-const ExamStepOne = () => import('../components/pages/ExamStepOne')
+const ExaminerEnroll = () => import('../components/pages/ExaminerEnroll')
 const ExamNow = () => import('../components/pages/ExamNow')
 
 const UserLayout = () => import('../components/pages/UserLayout')
-const ExaminerList = () => import('../components/pages/ExaminerList')
+const ExaminerListAdmin = () => import('../components/pages/ExaminerListAdmin')
+const ExaminerListSuperAdmin = () => import('../components/pages/ExaminerListSuperAdmin')
 const UserExaminerDetail = () => import('../components/pages/UserExaminerDetail')
 
 // Views - Pages
 const FrontendLogin = () => import('../components/admin/pages/FrontendLogin')
+const ExaminerLogin = () => import('../components/admin/pages/ExaminerLogin')
 const Register = () => import('../components/admin/pages/Register')
 const PasswordReset = () => import('../components/admin/pages/PasswordReset')
 const PasswordResetToken = () => import('../components/admin/pages/PasswordResetToken')
@@ -205,9 +207,19 @@ function configRoutes() {
       ]
     },
     {
+      path: '/',
+      name: 'ExaminerLogin',
+      component: ExaminerLogin,
+    },
+    {
       path: '/login',
       name: 'FrontendLogin',
       component: FrontendLogin,
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: Register,
     },
     {
       path: '/password/reset',
@@ -225,32 +237,44 @@ function configRoutes() {
       component: Login,
     },
     {
-      path: '/exam/step-one',
-      name: 'ExamStepOne',
-      component: ExamStepOne,
-    },
-    {
-      path: '/exam-now/:uniqueKey',
-      name: 'ExamNow',
-      component: ExamNow,
-    },
-    {
       path: '/examiners',
       name: 'User Examiners',
       component: UserLayout,
       children: [
         {
           path: 'list',
-          name: 'ExaminerList',
-          component: ExaminerList
+          name: 'ExaminerListAdmin',
+          component: ExaminerListAdmin
         },
         {
           path: ':id/',
           meta: { label: 'Examiner Detail' },
           name: 'User Examiner Detail',
           component: UserExaminerDetail
+        },
+        {
+          path: 'verified/list',
+          name: 'ExaminerListSuperAdmin',
+          component: ExaminerListSuperAdmin
+        },
+      ]
+    },
+    {
+      path: '/user',
+      name: 'User',
+      component: UserLayout,
+      children: [
+        {
+          path: '/exam/enroll',
+          name: 'ExaminerEnroll',
+          component: ExaminerEnroll,
         }
       ]
+    },
+    {
+      path: '/exam-now/:uniqueKey',
+      name: 'ExamNow',
+      component: ExamNow,
     },
     {
       path: '*',

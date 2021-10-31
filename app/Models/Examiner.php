@@ -16,4 +16,8 @@ class Examiner extends Model
     {
         return $date->format('Y-m-d H:i:s');
     }
+
+    public function assessments() {
+        return $this->hasMany(Assessment::class, 'examiner_id');
+    }
 }

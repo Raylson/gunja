@@ -19,8 +19,10 @@ class NotAuthenticateUser
         if (\Session::has('user_login')){
             if(session('user_login')['user_type'] == 'superadmin')
                 return redirect('/admin/dashboard');
-            else
+            else if(session('user_login')['user_type'] == 'admin')
                 return redirect('/examiners/list');
+            else
+                return redirect('/');
         }
         return $next($request);
     }

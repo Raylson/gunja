@@ -41,6 +41,9 @@ class User extends Authenticatable
         'is_email_verified',
         'is_phone_verified',
         'email_verified_at',
+        'company_name',
+        'company_address',
+        'designation',
     ];
 
     /**

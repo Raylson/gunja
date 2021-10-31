@@ -25,7 +25,7 @@
 						<!-- <li><a href="#"><i class="far fa-bell"></i></a><span class="badge">10</span></li> -->
 						<li class="h-user-info d-flex align-items-center">
 							<a href="#"><img :src="rootUrl+'/storage/'+user.avatar" class="img-fluid rounded-circle border" width="50px" alt=""></a>
-							<a href="#"><p> Hey, {{ user.first_name+(user.middle_name !=null ? ' '+user.middle_name : '')+(user.last_name !=null ? ' '+user.last_name : '') }}</p>
+							<a href="#"><p> Welcome, {{ user.first_name+(user.middle_name !=null ? ' '+user.middle_name : '')+(user.last_name !=null ? ' '+user.last_name : '') }}</p>
 								<!-- <span>Business Profile</span> -->
 							</a>
 						</li>

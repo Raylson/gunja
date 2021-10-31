@@ -55,3 +55,46 @@ if (! function_exists('class_friendly')) {
 		echo \Str::of($val)->snake();
     }
 }
+
+if (! function_exists('examiner_score')) {
+  function examiner_score($questionId, $assessments)
+  {
+    $score = '';
+    foreach($assessments as $assm)
+    {
+      if($questionId == $assm->question_id)
+      {
+        $score = $assm->user_score;
+        break;
+      }
+    }
+    return $score;
+  }
+}
+
+if (! function_exists('examiner_assessment_detail')) {
+  function examiner_assessment_detail($questionId, $assessments)
+  {
+    $detail = [];
+    foreach($assessments as $assm)
+    {
+      if($questionId == $assm->question_id)
+      {
+        $detail['id'] = $assm->id;
+        $detail['user_score'] = (int)$assm->user_score;
+        $detail['admin_score'] = (int)$assm->admin_score;
+        $detail['review'] = $assm->review;
+        break;
+      }
+    }
+
+    if(!sizeof($detail))
+    {
+      $detail['user_score'] = 0;
+      $detail['admin_score'] = 0;
+      $detail['review'] = '';
+    }
+    
+    return $detail;
+  }
+}

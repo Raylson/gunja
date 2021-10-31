@@ -14,7 +14,7 @@ class AddSocialDetailsInUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('user_type', ['admin', 'superadmin', 'user'])->default('admin');
+            $table->enum('user_type', ['admin', 'superadmin', 'user', 'examiner'])->default('admin');
             $table->enum('is_email_verified', [0, 1])->default(0);
             $table->enum('is_phone_verified', [0, 1])->default(0);
             $table->string('mobile')->nullable();

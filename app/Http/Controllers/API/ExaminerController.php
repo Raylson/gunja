@@ -4,22 +4,66 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ExaminerErollEmailJob;
+use App\Models\User;
 use App\Models\Examiner;
 use App\Models\Question;
 use App\Models\QuestionAnswer;
 use App\Models\Assessment;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class ExaminerController extends Controller
 {
+    public function checkExam()
+    {
+        try {
+            $examiner = Examiner::select('unique_key')->where([['email', '=', auth()->user()->email], ['submission_id', '=', '']])->first();
+            return response(['status' => 'success', 'message' => 'success.', 'examiner' => $examiner], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'failed', 'error' => $e->getMessage()], 500);
+        } 
+    }
+    public function register(Request $request)
+    {
+        try {
+
+            $validatedData = $request->validate([
+                'first_name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'phone' => 'required|string',
+                'company_name' => 'required|string|max:255',
+                'company_address' => 'required|string|max:255',
+                'designation' => 'required|string|max:255',
+                'password' => 'required|string|min:6|confirmed',
+            ]);
+    
+            $userData = $request->all();
+            // $userData['first_name'] = $request->first_name;
+            // $userData['email'] = $request->email;
+            // $userData['phone'] = $request->phone;
+            $userData['gender'] = 'male';
+            $userData['user_type'] = 'examiner';
+            $userData['avatar'] = 'user/avatar.jpg';
+            $userData['password'] = Hash::make($request->password);
+    
+            $user = User::create($userData);
+    
+            if($user)
+            {
+                \Session::flash('quick_msg', 'Examiner registration success! Please login now.');
+                return response(['status' => 'success', 'message' => 'Examiner registration success! Please login now.'], 200);
+            }
+            else
+                return response(['status' => 'failed', 'message' => 'Error on creating new examiner. Try again.'], 422);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'failed', 'error' => $e->getMessage(), 'message' => $e->getMessage()], 500);
+        } 
+    }
+
     public function enroll(Request $request)
     {
         try {
-            $validatedData = $request->validate([
-                'email' => 'required|string|email',
-            ]);
-
             $examiner = Examiner::create([
                 'email' => $request->email,
                 'unique_key' => $this->generateUniqueCode(),
@@ -58,6 +102,10 @@ class ExaminerController extends Controller
                 'answers' => 'required',
             ]);
 
+            $examiner = Examiner::select('id')->where('unique_key', $request->unique_key)->first();
+            if(!$examiner)
+                return response(['status' => 'failed', 'message' => 'Sorry! The link is invalid or you have already submitted the exam.'], 200);
+
             $data['answers'] = json_decode(stripslashes($request->answers), true);
             $assessments = [];
             if($data['answers'])
@@ -67,7 +115,7 @@ class ExaminerController extends Controller
                     $temp = explode('|', $pv);
                     Assessment::create(
                         [
-                            'unique_key' => $request->unique_key,
+                            'examiner_id' => $examiner->id,
                             'question_id' => $temp[0],
                             'answer_id' => $temp[1],
                             'answer' => $temp[2],
@@ -94,13 +142,27 @@ class ExaminerController extends Controller
      */
     public function index()
     {
-        $allExaminers = Examiner::select('id', 'email', 'unique_key', 'submission_id', 'submitted_date', 'updated_at')->orderBy('id', 'asc')->paginate(30);
+        $allExaminers = Examiner::select('id', 'email', 'unique_key', 'submission_id', 'submitted_date', 'updated_at', 'status')->where('submission_id', '!=', '')->orderBy('id', 'asc')->paginate(20);
+        return response(['all_examiners' => $allExaminers]);
+    }
+
+    public function verified()
+    {
+        $allExaminers = Examiner::select('id', 'email', 'unique_key', 'submission_id', 'submitted_date', 'updated_at', 'status')->where('submission_id', '!=', '')->orderBy('id', 'asc')->paginate(20);
+        // $allExaminers = Examiner::select('id', 'email', 'unique_key', 'submission_id', 'submitted_date', 'updated_at', 'status')->where('status', 'verified')->orderBy('id', 'asc')->paginate(20);
         return response(['all_examiners' => $allExaminers]);
     }
 
     public function search(Request $request) {
         $keyword = $request->keyword;
-        $allExaminers = Examiner::select('id', 'email', 'unique_key', 'submission_id', 'submitted_date', 'updated_at')->where('submission_id', 'like', '%'.$keyword.'%')->orderBy('id', 'asc')->get();
+        
+        // if($request->status == 'verified')
+        //     $allExaminers = Examiner::select('id', 'email', 'unique_key', 'submission_id', 'submitted_date', 'updated_at', 'status')->where([['submission_id', 'like', '%'.$keyword.'%'],['status', '=', 'verified']])->orderBy('id', 'asc')->get();
+        // else
+        //     $allExaminers = Examiner::select('id', 'email', 'unique_key', 'submission_id', 'submitted_date', 'updated_at', 'status')->where('submission_id', 'like', '%'.$keyword.'%')->orderBy('id', 'asc')->get();
+        
+        $allExaminers = Examiner::select('id', 'email', 'unique_key', 'submission_id', 'submitted_date', 'updated_at', 'status')->where('submission_id', 'like', '%'.$keyword.'%')->orderBy('id', 'asc')->get();
+        
         return response(['status' => 'success', 'all_examiners' => $allExaminers]);
     }
 
@@ -134,8 +196,8 @@ class ExaminerController extends Controller
     public function show($id)
     {
         try {
-            $examiner = Examiner::select('id', 'email', 'unique_key', 'submission_id', 'submitted_date', 'updated_at')->findOrFail($id);
-            $assessments = Assessment::with('question:id,question', 'admin:id,first_name,middle_name,last_name')->where('unique_key', $examiner->unique_key)->get();
+            $examiner = Examiner::select('id', 'email', 'unique_key', 'submission_id', 'submitted_date', 'updated_at', 'status')->findOrFail($id);
+            $assessments = Assessment::with('question:id,question', 'admin:id,first_name,middle_name,last_name')->where('examiner_id', $examiner->id)->get();
 
             $categories = Category::select('id', 'title')->with('subCategories:id,title,category_id,score', 'subCategories.questions:id,sub_category_id,question,score')->get();
             // dd($categories->toArray());

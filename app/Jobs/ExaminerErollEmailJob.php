@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Examiner;
-use App\Notifications\ExaminerEnrollNotification;
+use App\Notifications\IloEncompassNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -32,6 +32,6 @@ class ExaminerErollEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        $this->examiner->notify(new ExaminerEnrollNotification($this->examiner));
+        $this->examiner->notify(new IloEncompassNotification($this->examiner));
     }
 }

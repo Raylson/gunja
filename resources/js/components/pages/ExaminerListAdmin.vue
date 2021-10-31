@@ -1,7 +1,7 @@
 <template>
   <div class="examiners">
 		<div class="row p-4 mdisplay">
-			<div class="col-12 mb-3" style="margin:0;">
+			<div class="col-md-12 mb-3" style="margin:0;">
         <div class="col-auto float-start p-0">
 					<input type="number" id="search-field" v-model="searchKeyword" placeholder="Search by Submission Id">
           <button type="button" class="btn btn-default" @click="search">Search</button>
@@ -9,7 +9,7 @@
           <p class="text-danger search-error" v-if="searchError != ''" v-html="searchError"></p>
 				</div><!--end col-->  
 			</div>
-			<div class="col-12 text-center">
+			<div class="col-md-12 text-center">
         <div class="table-responsive fixed-table-body">
           <table class="table table-striped bg-white" id="search-table">
             <thead class="table-dark">
@@ -19,6 +19,7 @@
               <!-- <th scope="col">Unique Key</th> -->
               <th scope="col">Submission Id</th>
               <th scope="col">Submitted Date</th>
+              <th scope="col">Status</th>
               <th scope="col">Action</th>
               </tr>
             </thead>
@@ -29,6 +30,7 @@
                 <!-- <td><a :href="`${rootUrl}/examiners/${item.id}`">{{ item.unique_key }}</a></td> -->
                 <td>{{ item.submission_id }}</td>
                 <td>{{ item.submission_id != '' ? item.submitted_date : '' }}</td>
+                <td><span class="badge " :class="item.status == 'pending' ? 'bg-danger' : 'bg-success'">{{ item.status == 'pending' ? 'Pending' : 'Verified' }}</span></td>
                 <td>
                   <button class="btn btn-sm btn-success" @click="detail( item.id )"><i class="fas fa-eye"></i> Detail</button>
                 </td>
@@ -49,7 +51,7 @@ const qs = require('querystring');
 const pagination = require('laravel-vue-pagination');
 
 export default {
-  name: 'ExaminerList',
+  name: 'ExaminerListAdmin',
   data: () => {
     return {
       rootUrl: process.env.MIX_APP_URL,
@@ -68,7 +70,8 @@ export default {
   methods: {
     detail ( id ) {
       let self = this;
-      self.$router.push({path: '/examiners/'+id});
+      window.location = '/exam-detail/'+id;
+      // self.$router.push({path: '/exam-detail/'+id});
     },
     
     getExaminer (page){
@@ -109,6 +112,7 @@ export default {
       // Submit the form to edit category
       var formData = new FormData();
       formData.append('keyword', self.searchKeyword);
+      formData.append('status', 'pending');
 
       axios.post(process.env.MIX_APP_URL+'/api/examiners/search', formData, {
         headers: {

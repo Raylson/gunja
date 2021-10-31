@@ -33,14 +33,16 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
 
     Route::post('/register', [AuthController::class, 'register'])->name('register.api');
-    Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('password.reset');
-    Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::post('/password/reset', [AuthController::class, 'reset'])->name('password.reset');
+    Route::post('/password/email', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::post('/checkToken', [App\Http\Controllers\Auth\AuthController::class, 'checkToken']);
 
+    Route::post('/register/examiner', [ExaminerController::class, 'register']);
     Route::post('/examiners/enroll', [ExaminerController::class, 'enroll'])->name('examiners.enroll');
+    Route::get('/checkExam', [ExaminerController::class, 'checkExam']);
     Route::get('/examiners/exam-now/{unique_key}', [ExaminerController::class, 'examNow'])->name('examiners.examNow');
     Route::post('/examiners/exam-submit', [ExaminerController::class, 'examSubmit'])->name('examiners.examSubmit');
 
@@ -51,6 +53,7 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
         Route::post('/settings', [SettingController::class, 'store'])->name('store.settings');
 
         // Manage Users
+        Route::post('/getCountDashboard', [UserController::class, 'getCountDashboard']);
         Route::get('/users', [UserController::class, 'index'])->name('users.all');
         Route::post('/user/register', [UserController::class, 'store'])->name('register.user');
         Route::get('/users/{id}', [UserController::class, 'show'])->name('user.detail');
@@ -89,6 +92,7 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
 
         // Manage Examiners
         Route::get('/examiners', [ExaminerController::class, 'index'])->name('examiners.index');
+        Route::get('/examiners/verified', [ExaminerController::class, 'verified'])->name('examiners.verified');
         Route::post('/examiners/search', [ExaminerController::class, 'search'])->name('examiners.search');
         Route::post('/examiners', [ExaminerController::class, 'store'])->name('examiners.store');
         Route::get('/examiners/{id}', [ExaminerController::class, 'show'])->name('examiners.show');

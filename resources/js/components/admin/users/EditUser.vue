@@ -19,7 +19,7 @@
             <div class="card-body">
               <div class="row mb-3 align-items-center">
                 <div class="col-3">
-                  <label for="first_name" class="form-label">First Name <span class="text-danger form-text">*</span></label>
+                  <label for="first_name" class="form-label">Organization Name <span class="text-danger form-text">*</span></label>
                 </div>
                 <div class="col-9">
                   <input type="text" class="form-control" id="first_name" name="first_name" v-model="user.first_name" required>
@@ -28,7 +28,7 @@
                   </span>
                 </div>
               </div>
-              <div class="row mb-3 align-items-center">
+              <!-- <div class="row mb-3 align-items-center">
                 <div class="col-3">
                   <label for="middle_name" class="form-label">Middle Name</label>
                 </div>
@@ -60,8 +60,8 @@
                       <strong>{{ errors.username }}</strong>
                   </span>
                 </div>
-              </div>
-              <div class="row mb-3 align-items-center">
+              </div> -->
+              <!-- <div class="row mb-3 align-items-center">
                 <div class="col-3">
                   <label for="gender" class="form-label">Gender <span class="text-danger form-text">*</span></label>
                 </div>
@@ -73,7 +73,7 @@
                     <option value="other">Other</option>
                   </select>
                 </div>
-              </div>
+              </div> -->
               <div class="row mb-3 align-items-center">
                 <div class="col-3">
                   <label for="email" class="form-label">Email <span class="text-danger form-text">*</span></label>
@@ -117,7 +117,7 @@
               </div>
               <div class="row mb-3">
                 <div class="col-3">
-                  <label for="bio" class="form-label">User Bio</label>
+                  <label for="bio" class="form-label">Organization Bio</label>
                 </div>
                 <div class="col-9">
                   <textarea class="form-control" rows="6" id="bio" name="bio" v-model="user.bio"></textarea>
@@ -149,7 +149,7 @@
                 <div class="col-9">
                   <select class="form-select" aria-label="Select User Type" v-model="user.user_type" required>
                     <option value="" selected>- Select User Type -</option>
-                    <option value="user">Normal Admin</option>
+                    <!-- <option value="user">Normal Admin</option> -->
                     <option value="admin">Admin</option>
                     <option value="superadmin">Super Admin</option>
                   </select>
@@ -167,7 +167,7 @@
         <div class="col-3">
           <div class="card">
             <div class="card-header bg-default text-light">
-              <h2>User Profile</h2>
+              <h2>Organization Logo</h2>
             </div>
             <div class="card-body">
               <div class="row">

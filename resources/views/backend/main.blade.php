@@ -36,6 +36,7 @@
             'company_address' => $siteSetting->company_address,
             'company_title' => $siteSetting->company_title,
             'website_logo' => $siteSetting->website_logo,
+            'message' => Session::get('message'),
         ]) !!};
     </script>
 

@@ -3,13 +3,14 @@
         <div class="row justify-content-center">
             <div class="col-12">
 				<div class="row login-wrap p-4 bg-transparent">
-					<!-- <div class="col-md-12">
-						<div class="lwrap text-center p-4">
-							<img :src="logo" style="height: 60px;" class="img-fluid" alt="">
-						</div>
-					</div> -->
-					<div class="col-md-6 bg-dark text-center">
-						<h1 class="p-4" style="color:#fff; font-size: 1.5rem;">Welcome to FNCCI</h1>
+					<div class="col-md-12 text-center p-3">
+						<img :src="logo" style="max-height:5rem;" class="img-fluid" alt="">
+					</div>
+					<div class="col-md-6 bg-dark justify-content-center text-center p-3">
+						<h1 class="p-4" style="color:#fff; font-size: 1.5rem; margin-top:10%;">
+							WELCOME TO ILO ENCOMPASS SYSTEM.<br><span style="font-size:1.2rem">Competitiveness and Resilience Assessment Tool</span>
+						</h1>
+						<h2 style="font-size:1.2rem; color: #fff;">प्रतिस्पर्धात्मकता एवं लचकता मूल्यांकन प्रणाली</h2>
 					</div>
 					<div class="col-md-6 border bg-white">
 						<div class="lwrap p-4">
@@ -19,8 +20,10 @@
 									<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 								</p>
 							</template>
-							<h2>Let's sign you in.<br>
-							<span>Welcome Back. <br>You've been missed!</span>
+							<div v-if="sessionMessage != null" class="p-2 mb-3 alert-success" role="alert">
+								{{ sessionMessage }}
+							</div>
+							<h2>Authorised Members Login.<br>
 							</h2>
 							<form class="rd-form-icon" @submit.prevent="login">
 								<div class="mb-3">
@@ -52,11 +55,11 @@
 										</div>
 									</div>
 									<div class="col-5 text-end">
-										<a href="/password/reset" class="form-check-label">Forget Password?</a>
+										<a href="/forget-password" class="form-check-label">Forget Password?</a>
 									</div>
 								</div>
 								<div class="row">
-									<div class="col-5">
+									<div class="col-12">
 										<button type="submit" class="btn btn-lg btn-default w-100 btn-submit"><i class="fas fa-key"></i> Sign In</button>
 									</div>
 									<!-- <div class="col-7">
@@ -80,6 +83,7 @@ export default {
     data() {
         return {
 			logo: '',
+			sessionMessage: '',
 			rootUrl: process.env.MIX_APP_URL,
             email: '',
             password: '',
@@ -115,10 +119,12 @@ export default {
 							path: '/admin/dashboard'
 						});
 					}
-					else
+					else if(response.data.user.user_type == 'admin' || response.data.user.user_type == 'user')
 					{
 						window.location.href = '/examiners/list';
 					}
+					else
+						window.location.href = '/exam/enroll';
                 }
 				$('.btn-submit').removeAttr('disabled');
 				$('.btn-submit').html('<i class="fas fa-key"></i> Sign In');
@@ -146,6 +152,7 @@ export default {
     },
 	mounted() {
 		this.logo = this.rootUrl+'/storage/'+window.Laravel.website_logo;
+		this.sessionMessage = window.Laravel.message;
 		if(this.socialError)
 		{
 			setTimeout(() => {
@@ -157,6 +164,7 @@ export default {
 </script>
 
 <style scoped>
+.login-wrap { position: initial; transform: initial; margin: 0 auto; }
 .login-wrap .lwrap { padding: 0; }
 .form-control {
     opacity: 1 !important;

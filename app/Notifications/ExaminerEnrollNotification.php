@@ -42,9 +42,9 @@ class ExaminerEnrollNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('Thank you for enrolling to our Examination.')
-                    ->action('Go to Exam Now. Click Here.', url('/').'/exam-now/'.$this->examiner->unique_key)
-                    ->line('Thank you for using our application!');
+                    ->line('Thank you for registering into ILO Encompass.')
+                    ->action('Go to ILO ENCOMPASS ASSESSMENT page. Click Here.', url('/').'/exam-now/'.$this->examiner->unique_key)
+                    ->line('Thank you for using ILO Encompass!');
     }
 
     /**

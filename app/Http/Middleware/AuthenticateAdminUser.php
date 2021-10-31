@@ -23,9 +23,7 @@ class AuthenticateAdminUser
         }
 
         if(auth()->user()->user_type == 'superadmin')
-            return redirect('/admin/dashboard');
-        else
-            return redirect('/examiners/list');
+            return redirect('/examiners/verified/list');
 
         return $next($request);
     }

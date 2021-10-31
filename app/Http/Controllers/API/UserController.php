@@ -5,13 +5,16 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Category;
+use App\Models\Question;
+use App\Models\Examiner;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
     public function index() {
-        $allUsers = User::select('id', 'first_name', 'middle_name', 'last_name', 'email', 'phone', 'mobile', 'address', 'is_email_verified', 'is_phone_verified', 'avatar', 'provider', 'user_type')->orderBy('id', 'desc')
+        $allUsers = User::select('id', 'first_name', 'middle_name', 'last_name', 'email', 'phone', 'mobile', 'address', 'is_email_verified', 'is_phone_verified', 'avatar', 'provider', 'user_type')->whereIn('user_type', ['superadmin', 'admin', 'user'])->orderBy('id', 'desc')
                         ->get();
         
         return response(['all_users' => $allUsers]);
@@ -20,8 +23,8 @@ class UserController extends Controller
     public function store (Request $request) {
     	$validatedData = $request->validate([
             'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'gender' => 'required|string|max:255',
+            // 'last_name' => 'required|string|max:255',
+            // 'gender' => 'required|string|max:255',
 	        'email' => 'required|string|email|max:255|unique:users',
 	        'mobile' => 'required|string|max:20|unique:users',
 	        // 'phone' => 'required|string|max:20',
@@ -33,7 +36,7 @@ class UserController extends Controller
 
         $userData = $request->all();
         $userData['password'] = Hash::make($request->password);
-
+        $userData['last_name'] = '';
         if ($request->hasFile('avatar')) {
             $filenameWithExt = $request->avatar->getClientOriginalName();
             $filename = str_replace(' ', '_', pathinfo($filenameWithExt, PATHINFO_FILENAME));
@@ -61,7 +64,7 @@ class UserController extends Controller
     public function show($id)
     {
         try {
-            $user = User::select('id', 'first_name', 'middle_name', 'last_name', 'gender', 'email', 'phone', 'mobile', 'address', 'avatar', 'bio', 'website', 'username', 'user_type')->findOrFail($id);
+            $user = User::select('id', 'first_name', 'middle_name', 'last_name', 'gender', 'email', 'phone', 'mobile', 'address', 'avatar', 'bio', 'website', 'username', 'user_type')->whereIn('user_type', ['superadmin', 'admin', 'user'])->findOrFail($id);
             return response(['status' => 'success', 'user' => $user, 'role' => count($user->getRoleNames()) > 0 ? $user->getRoleNames()[0] : ''], 200);
         } catch (\Exception $e) {
             return response()->json(['status' => 'failed', 'error' => $e->getMessage()], 500);
@@ -73,8 +76,8 @@ class UserController extends Controller
         {
             $validatedData = $request->validate([
                 'first_name' => 'required|string|max:255',
-                'last_name' => 'required|string|max:255',
-                'gender' => 'required|string|max:255',
+                // 'last_name' => 'required|string|max:255',
+                // 'gender' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users,email,'.$id,
                 'mobile' => 'required|string|max:20|unique:users,mobile,'.$id,
                 // 'phone' => 'required|string|max:20',
@@ -89,7 +92,8 @@ class UserController extends Controller
             unset($userData['_method']);
             unset($userData['id']);
             unset($userData['provider']);            
-
+            $userData['last_name'] = '';
+            
             if($request->password)
                 $userData['password'] = Hash::make($request->password);
             else
@@ -149,5 +153,13 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function getCountDashboard()
+    {
+        $cat = Category::select('id')->withCount('subCategories')->get();
+        $que = Question::count();
+        $examiner = Examiner::where('submission_id', '!=', '')->count();
+        return response([ 'status' => 'success', 'cat_count' => $cat->count(), 'subcat_count' => $cat->sum('sub_categories_count'), 'question_count' => $que, 'examiner_count' => $examiner], 200);            
     }
 }
